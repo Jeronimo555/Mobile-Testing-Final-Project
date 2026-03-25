@@ -1,4 +1,14 @@
 package com.globant.mobile.tests;
 
-public class NavigateToBottomBarTest {
+import org.testng.annotations.Test;
+
+public class NavigateToBottomBarTest extends BaseTest{
+
+    @Test
+    public void navigateToBottombarTest(){
+
+
+
+    }
+
 }
