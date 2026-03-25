@@ -2,8 +2,8 @@ package com.globant.mobile.screens;
 
 import io.appium.java_client.AppiumDriver;
 
-public class FormScreen extends BaseScreen{
-    public FormScreen(AppiumDriver appium_driver) {
+public class SwipeScreen extends BaseScreen{
+    public SwipeScreen(AppiumDriver appium_driver) {
         super(appium_driver);
     }
 }
