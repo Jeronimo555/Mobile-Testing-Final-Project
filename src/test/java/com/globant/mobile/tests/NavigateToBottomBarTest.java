@@ -6,9 +6,7 @@ public class NavigateToBottomBarTest extends BaseTest{
 
     @Test
     public void navigateToBottombarTest(){
-
-
-
+        System.out.println("Hola!");
     }
 
 }
