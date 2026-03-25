@@ -7,7 +7,11 @@ import org.openqa.selenium.WebElement;
 public class LoginScreen extends BaseScreen{
 
     @AndroidFindBy(uiAutomator = "description(\"button-LOGIN\")")
-    WebElement login_btn;
+    private WebElement login_btn;
+
+    @AndroidFindBy(uiAutomator = "text(\"Sign up\")")
+    private WebElement sign_up_btn;
+
 
     public LoginScreen(AppiumDriver appium_driver) {
         super(appium_driver);
@@ -15,6 +19,11 @@ public class LoginScreen extends BaseScreen{
 
     public boolean checkLoginButtonVisibility(){
         return isTheElementVisible(this.login_btn,15);
+    }
+
+    public SignUpScreen clickOnSignUp(){
+        click(this.sign_up_btn);
+        return new SignUpScreen(getDriver());
     }
 
 }
