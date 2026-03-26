@@ -21,6 +21,9 @@ public class SignUpScreen extends BaseScreen{
     @AndroidFindBy(uiAutomator = "resourceId(\"android:id/message\")")
     private WebElement successful_sign_up_msg;
 
+    @AndroidFindBy(uiAutomator = "resourceId(\"android:id/button1\")")
+    private WebElement successful_sign_up_ok_btn;
+
     public SignUpScreen(AppiumDriver appium_driver) {
         super(appium_driver);
     }
@@ -33,5 +36,9 @@ public class SignUpScreen extends BaseScreen{
         click(this.sign_up_btn);
 
         return isTheElementVisible(this.successful_sign_up_msg,10);
+    }
+
+    public void clickOnOkSucess(){
+        click(this.successful_sign_up_ok_btn);
     }
 }

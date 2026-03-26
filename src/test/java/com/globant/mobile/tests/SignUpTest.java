@@ -14,7 +14,7 @@ public class SignUpTest extends BaseTest{
     private String test_email;
     private String test_password = "SecurePassword123!";
 
-    @BeforeMethod()
+    @BeforeMethod(groups = {"SignUpTest"})
     public void preconditions(){
         HomeScreen home_screen = new HomeScreen(getDriver());
 
