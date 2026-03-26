@@ -34,7 +34,17 @@ public class BaseScreen {
         }
     }
 
-    public void isVisible(WebElement element){
+    /**
+     *
+     * @param element Web element which will receive the input
+     * @param value the value that you want to input
+     */
+    public void inputText(WebElement element,String value){
+        try {
+            element.sendKeys(value);
+        } catch (Exception e) {
+            throw new RuntimeException("The element could not be found");
+        }
     }
 
     public boolean isTheElementVisible(WebElement element, int seconds) {
