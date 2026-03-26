@@ -18,7 +18,7 @@ public class NavigateToBottomBarTest extends BaseTest{
         //check_screen = webview_screen.checkIOLogo();
         check_screen = webview_screen.checkLoadingText();
 
-        Assert.assertTrue(check_screen, "The IO logo is missing.");
+        Assert.assertTrue(check_screen, "The Loading logo is missing.");
 
         //Check Login
         LoginScreen login_screen = homeScreen.clickOnLogin();
