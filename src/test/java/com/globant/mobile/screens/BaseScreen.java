@@ -3,7 +3,9 @@ package com.globant.mobile.screens;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import lombok.Data;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Pause;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.PageFactory;
@@ -17,11 +19,17 @@ import java.util.Collections;
 public class BaseScreen {
 
     private AppiumDriver driver;
+    private int screenWidth;
+    private int screenHeight;
 
     public BaseScreen(AppiumDriver appium_driver){
         this.driver = appium_driver;
         PageFactory.initElements(new AppiumFieldDecorator(appium_driver),this);
+
+        this.screenWidth = appium_driver.manage().window().getSize().getWidth();
+        this.screenHeight = appium_driver.manage().window().getSize().getHeight();
     }
+
 
     /**
      * clicks element and adds description
@@ -61,26 +69,66 @@ public class BaseScreen {
     }
 
 
-    public void horizontalSwipe(){
-        int screenWidth = driver.manage().window().getSize().getWidth();
-        int screenHeight = driver.manage().window().getSize().getHeight();
+    public void horizontalSwipe(WebElement element){
+            // 1. Get the dimensions of the entire device screen
+            Dimension screenSize = this.driver.manage().window().getSize();
 
-        //Calculate starting coordinates for the swipe
-        int startX = (int) (screenWidth * 0.8); // Start at 80% on the right
-        int endX = (int) (screenWidth * 0.2);   // End at 20% on the left
-        int y = screenHeight / 2;
+            // 2. Calculate X coordinates based on screen percentages
+            int startX = (int) (this.screenWidth * 0.92); // Start at 80% (Near right edge)
+            int endX = (int) (this.screenWidth * 0.01);   // End at 20% (Near left edge)
 
-        PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+            // 3. Set the Y coordinate to the middle of the screen
+            int y = this.screenHeight / 2;
 
-        //Move to start -> Press down -> Drag to end -> Release
-        Sequence swipe = new Sequence(finger, 1)
-                .addAction(finger.createPointerMove(Duration.ZERO,PointerInput.Origin.viewport(),startX,y))
-                .addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
-                .addAction(finger.createPointerMove(Duration.ofMillis(600),PointerInput.Origin.viewport(),endX,y))
-                .addAction(finger.createPointerUp(PointerInput.MouseButton.BACK.asArg()));
+            PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+            Sequence swipe = new Sequence(finger, 1);
 
-        driver.perform(Collections.singletonList(swipe));
+            // Move to the starting position and press down
+            swipe.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), startX, y));
+            swipe.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+
+            // Execute the fast flick (200ms) to trigger carousel momentum
+            swipe.addAction(finger.createPointerMove(Duration.ofMillis(1000), PointerInput.Origin.viewport(), endX, y));
+            swipe.addAction(new Pause(finger, Duration.ofMillis(200)));
+            swipe.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+
+            this.driver.perform(Collections.singletonList(swipe));
     }
 
+    public void executeSwipe(int startX, int startY, int endX, int endY, Duration duration) {
+        PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+        Sequence swipe = new Sequence(finger, 1);
 
+        swipe.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), startX, startY));
+        swipe.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+
+        swipe.addAction(finger.createPointerMove(duration, PointerInput.Origin.viewport(), endX, endY));
+        swipe.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+
+        this.driver.perform(Collections.singletonList(swipe));
+    }
+
+    public void smallInitialVerticalSwipe() {
+        Dimension screenSize = this.driver.manage().window().getSize();
+        int safeX = (int) (this.screenWidth * 0.05); // 5% safe edge
+
+        // Start near the top (30% down the screen) and flick up to 10%
+        int startY = (int) (this.screenHeight * 0.30);
+        int endY = (int) (this.screenHeight * 0.10);
+
+        // Fast, short flick
+        executeSwipe(safeX, startY, safeX, endY, Duration.ofMillis(300));
+    }
+
+    public void verticalSwipe() {
+        Dimension screenSize = this.driver.manage().window().getSize();
+        int safeX = (int) (this.screenWidth * 0.05); // 5% safe edge
+
+        // Now that we have leeway, we can safely start at 80% and drag to 20%
+        int startY = (int) (this.screenHeight * 0.80);
+        int endY = (int) (this.screenHeight * 0.20);
+
+        // Standard smooth scroll
+        executeSwipe(safeX, startY, safeX, endY, Duration.ofMillis(500));
+    }
 }
