@@ -68,6 +68,14 @@ public class BaseScreen {
         }
     }
 
+    public boolean isElementHidden(WebElement element) {
+        try {
+            return !isTheElementVisible(element,1);
+        } catch (Exception e) {
+            return true;
+        }
+    }
+
 
     public void horizontalSwipe(WebElement element){
             // 1. Get the dimensions of the entire device screen

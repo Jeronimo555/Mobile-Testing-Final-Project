@@ -3,18 +3,22 @@ package com.globant.mobile.screens;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.pagefactory.AndroidFindBy;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.RemoteWebElement;
+
+import java.time.Duration;
+import java.util.List;
 
 public class SwipeScreen extends BaseScreen{
 
     @AndroidFindBy(uiAutomator = "text(\"Swipe horizontal\")")
     private WebElement swipe_text;
 
-    @AndroidFindBy(uiAutomator = "description(\"card\").instance(0)")
+    @AndroidFindBy(uiAutomator = "resourceId(\"__CAROUSEL_ITEM_0__\")")
     private WebElement first_card;
-
-    @AndroidFindBy(uiAutomator = "description(\"card\").instance(1)")
-    private WebElement second_card;
 
     @AndroidFindBy(uiAutomator = "text(\"COMPATIBLE\")")
     private WebElement final_card;
@@ -30,9 +34,24 @@ public class SwipeScreen extends BaseScreen{
         return isTheElementVisible(this.swipe_text,10);
     }
 
-    public boolean isFirstCardVisible() { return isTheElementVisible(first_card,3); }
-    public boolean isSecondCardVisible() { return isTheElementVisible(second_card,3); }
-    public boolean isLastCardVisible() { return isTheElementVisible(final_card,3); }
+    public boolean isCardVisible(WebElement card) { return isTheElementVisible(card,1); }
+
+    public boolean isCardIdHidden(String expectedId) {
+        try {
+            getDriver().manage().timeouts().implicitlyWait(Duration.ofMillis(500));
+            List<WebElement> elements = getDriver().findElements(AppiumBy.id(expectedId));
+            getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
+
+            if (elements.isEmpty()) {
+                return true;
+            }
+
+            return !elements.get(0).isDisplayed();
+        } catch (Exception e) {
+            getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
+            return true;
+        }
+    }
 
     public void swipeToNextCard(){
         try {
@@ -43,13 +62,20 @@ public class SwipeScreen extends BaseScreen{
         }
     }
 
-    public void swipeToLastCard(byte number_of_swipes){
-        while(number_of_swipes != 0){
-            swipeToNextCard();
-            number_of_swipes--;
-        }
-    }
+    public boolean swipeToLastCard(int number_of_swipes){
 
+        for (byte i = 0; i<number_of_swipes;i++){
+            String currentCardId = "__CAROUSEL_ITEM_" + i + "__";
+
+            swipeToNextCard();
+
+            if (!isCardIdHidden(currentCardId)){
+                return false;
+            }
+        }
+
+        return isCardVisible(this.final_card);
+    }
 
     public boolean scrollDownToHiddenText(){
         int maxSwipes = 3; // Failsafe so the test doesn't loop forever
@@ -58,14 +84,11 @@ public class SwipeScreen extends BaseScreen{
         smallInitialVerticalSwipe();
 
         while (currentSwipes < maxSwipes) {
-
-            // Check if the text is visible on the current screen
-            if (isTheElementVisible(this.hidden_txt,1/2)) {
-                return true;
-            }
-
             try {
-
+                // Check if the text is visible on the current screen
+                if (isTheElementVisible(this.hidden_txt,1/2)) {
+                    return true;
+                }
                 verticalSwipe();
                 Thread.sleep(500);
             } catch (InterruptedException e) {

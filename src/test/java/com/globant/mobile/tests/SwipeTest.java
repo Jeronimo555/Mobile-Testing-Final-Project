@@ -17,19 +17,10 @@ public class SwipeTest extends BaseTest{
 
     @Test(groups = {"SwipeTest"})
     public void swipeTest(){
-
-        //Simple smoke test
-        Assert.assertTrue(this.swipe_screen.isFirstCardVisible(),"First card should be visible initially.");
-
-        //I had to count them manually since there is not way to get the number using a locator.
-        this.swipe_screen.swipeToLastCard((byte) 5);
-        Assert.assertTrue(this.swipe_screen.isLastCardVisible(),"Last card should be visible.");
+        Assert.assertTrue(this.swipe_screen.swipeToLastCard(5),"Last card should be visible.");
 
         //Now to scroll down to the hidden text.
         boolean check_screen = swipe_screen.scrollDownToHiddenText();
         Assert.assertTrue(check_screen,"This hidden text is not visible");
     }
-
-
-
 }
