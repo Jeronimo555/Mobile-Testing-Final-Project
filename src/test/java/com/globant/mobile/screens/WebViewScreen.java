@@ -9,7 +9,6 @@ public class WebViewScreen extends BaseScreen{
     @AndroidFindBy(uiAutomator = "text(\"WebdriverIO\")")
     private WebElement io_logo;
 
-    //In case the web nav never loads, use this element instead of the logo.
     @AndroidFindBy(uiAutomator = "text(\"LOADING...\")")
     private WebElement loading_text;
 
@@ -17,10 +16,18 @@ public class WebViewScreen extends BaseScreen{
         super(appium_driver);
     }
 
+    /**
+     * Only use this method if the web view loads.
+     * @return True if the IO logo is visible, False if not.
+     */
     public boolean checkIOLogo(){
         return isTheElementVisible(this.io_logo,20);
     }
 
+    /**
+     * In case the web nav never loads, use this element instead of the logo.
+     * @return True if the Loading text is visible, False if not.
+     */
     public boolean checkLoadingText(){
         return isTheElementVisible(this.loading_text,10);
     }

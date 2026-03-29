@@ -16,9 +16,11 @@ public class BaseTest {
 
     private AppiumDriver driver;
 
+    /**
+     * Setup method for all tests. It sets the URL, emulator data, and adds an implicit wait of 10 seconds.
+     */
     @BeforeMethod
     public void setup() {
-
         try {
             //Set up the exact same capabilities we used in the Inspector
             UiAutomator2Options options = new UiAutomator2Options()
@@ -29,16 +31,18 @@ public class BaseTest {
                     .setAppActivity(".MainActivity"); //Make sure to change this depending on the main activity of the app.
 
             URL url = new URL("http://127.0.0.1:4723");
+
             this.driver = new AppiumDriver(url,options);
-
             this.driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
 
+    /**
+     * Standard teardown method that runs after each tests is complete.
+     */
     @AfterMethod
     public void tearDown() {
         if (driver != null) {
