@@ -6,10 +6,10 @@ import org.testng.annotations.Test;
 
 public class BottomBarNavigationTest extends BaseTest{
 
+    //There is no precondition because the driver's activity sets the page to always start in the home screen.
     @Test
     public void bottomBarNavigationTest(){
         HomeScreen homeScreen = new HomeScreen(getDriver());
-        boolean check_screen;
 
         //Check Web view
         WebViewScreen webview_screen = homeScreen.clickOnWebView();

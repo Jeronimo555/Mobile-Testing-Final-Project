@@ -10,7 +10,6 @@ import org.testng.annotations.Test;
 public class SignUpTest extends BaseTest{
     private LoginScreen login_screen;
 
-
     @BeforeMethod(groups = {"SignUpTest"})
     public void preconditions(){
         HomeScreen home_screen = new HomeScreen(getDriver());
