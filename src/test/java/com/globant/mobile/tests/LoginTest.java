@@ -2,7 +2,6 @@ package com.globant.mobile.tests;
 
 import com.globant.mobile.screens.HomeScreen;
 import com.globant.mobile.screens.LoginScreen;
-import com.globant.mobile.screens.SignUpScreen;
 import com.globant.mobile.utils.DataGenerator;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -19,17 +18,17 @@ public class LoginTest extends BaseTest{
         String test_email = DataGenerator.generateRandomEmail();
         String test_password = "SecurePassword123!";
 
-        SignUpScreen sign_up_screen = this.login_screen.clickOnSignUp();
-        sign_up_screen.createUser(test_email, test_password);
+        this.login_screen.clickOnSignUp();
+        login_screen.createUser(test_email, test_password);
 
-        sign_up_screen.clickOnOkSucess();
+        login_screen.clickOnOkSucess();
         this.login_screen.clickOnLogin();
     }
 
+    //Since the precondition includes the user creation, the Login form already has that data in the text field,
+    //so we only need to click on the button to log in.
     @Test(groups = {"LoginTest"})
     public void loginTest(){
-        //Since the precondition includes the user creation, the Login form already has that data in the text field,
-        //so we only need to click on the button to log in.
         this.login_screen.clickOnLoginFormBtn();
         boolean check_text = this.login_screen.checkSuccessMsg();
 
