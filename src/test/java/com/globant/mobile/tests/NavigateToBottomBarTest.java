@@ -15,41 +15,27 @@ public class NavigateToBottomBarTest extends BaseTest{
 
         //Check Web view
         WebViewScreen webview_screen = homeScreen.clickOnWebView();
-        //check_screen = webview_screen.checkIOLogo();
-        check_screen = webview_screen.checkLoadingText();
-
-        Assert.assertTrue(check_screen, "The Loading logo is missing.");
+        Assert.assertTrue(webview_screen.checkLoadingText(), "The Loading logo is missing.");
 
         //Check Login
         LoginScreen login_screen = homeScreen.clickOnLogin();
-        check_screen = login_screen.checkLoginButtonVisibility();
-
-        Assert.assertTrue(check_screen, "The Login button is missing.");
+        Assert.assertTrue(login_screen.checkLoginButtonVisibility(), "The Login button is missing.");
 
         //Check Forms
         FormScreen form_screen = homeScreen.clickOnForm();
-        check_screen = form_screen.checkFormText();
-
-        Assert.assertTrue(check_screen, "The Form text is missing.");
+        Assert.assertTrue(form_screen.checkFormText(), "The Form text is missing.");
 
         //Check Swipe
         SwipeScreen swipe_screen = homeScreen.clickOnSwipe();
-        check_screen = swipe_screen.checkSwipeText();
-
-        Assert.assertTrue(check_screen, "The Swipe text is missing.");
+        Assert.assertTrue(swipe_screen.checkSwipeText(), "The Swipe text is missing.");
 
         //Check Drag
         DragScreen drag_screen = homeScreen.clickOnDrag();
-        check_screen = drag_screen.checkDragText();
-
-        Assert.assertTrue(check_screen, "The Drag text is missing.");
+        Assert.assertTrue(drag_screen.checkDragText(), "The Drag text is missing.");
 
         //Check Menu
-
         MenuScreen menu_screen = homeScreen.clickOnMenu();
-        check_screen = menu_screen.checkMenuText();
-
-        Assert.assertTrue(check_screen, "The Drag text is missing.");
+        Assert.assertTrue(menu_screen.checkMenuText(), "The Drag text is missing.");
 
         System.out.println("Test Complete!");
     }

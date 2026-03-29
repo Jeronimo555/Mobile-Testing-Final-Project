@@ -25,8 +25,10 @@ public class LoginTest extends BaseTest{
         this.login_screen.clickOnLogin();
     }
 
-    //Since the precondition includes the user creation, the Login form already has that data in the text field,
-    //so we only need to click on the button to log in.
+    /**
+     * Since the precondition includes the user creation, the Login form already has that data in the text field,
+     * so we only need to click on the button to log in.
+     */
     @Test(groups = {"LoginTest"})
     public void loginTest(){
         this.login_screen.clickOnLoginFormBtn();
