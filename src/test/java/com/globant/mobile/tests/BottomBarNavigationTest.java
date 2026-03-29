@@ -4,12 +4,10 @@ import com.globant.mobile.screens.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.awt.*;
-
-public class NavigateToBottomBarTest extends BaseTest{
+public class BottomBarNavigationTest extends BaseTest{
 
     @Test
-    public void navigateToBottombarTest(){
+    public void bottomBarNavigationTest(){
         HomeScreen homeScreen = new HomeScreen(getDriver());
         boolean check_screen;
 
