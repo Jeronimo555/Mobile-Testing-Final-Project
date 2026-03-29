@@ -3,11 +3,7 @@ package com.globant.mobile.screens;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.pagefactory.AndroidFindBy;
-import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.remote.RemoteWebElement;
 
 import java.time.Duration;
 import java.util.List;
@@ -36,10 +32,15 @@ public class SwipeScreen extends BaseScreen{
 
     public boolean isCardVisible(WebElement card) { return isTheElementVisible(card,1); }
 
-    public boolean isCardIdHidden(String expectedId) {
+    /**
+     * This method makes sure that a given ID's card is not visible.
+     * @param expected_id The method checks that the card with this ID is hidden/invisible.
+     * @return True if the card is hidden, False if it is not.
+     */
+    public boolean isCardIdHidden(String expected_id) {
         try {
             getDriver().manage().timeouts().implicitlyWait(Duration.ofMillis(500));
-            List<WebElement> elements = getDriver().findElements(AppiumBy.id(expectedId));
+            List<WebElement> elements = getDriver().findElements(AppiumBy.id(expected_id));
             getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
 
             if (elements.isEmpty()) {
@@ -53,15 +54,23 @@ public class SwipeScreen extends BaseScreen{
         }
     }
 
+    /**
+     * Does a horizontal swipe and waits half a second to let the system breath.
+     */
     public void swipeToNextCard(){
         try {
-            horizontalSwipe(this.first_card);
+            horizontalSwipe();
             Thread.sleep(500);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
 
+    /**
+     * Swipes each card, making sure that the previous one is hidden after the swipe
+     * @param number_of_swipes the amount of times you wish to swipe
+     * @return boolean value based on if the last card is visible.
+     */
     public boolean swipeToLastCard(int number_of_swipes){
 
         for (byte i = 0; i<number_of_swipes;i++){
@@ -77,15 +86,19 @@ public class SwipeScreen extends BaseScreen{
         return isCardVisible(this.final_card);
     }
 
-    public boolean scrollDownToHiddenText(){
-        int maxSwipes = 3; // Failsafe so the test doesn't loop forever
-        int currentSwipes = 0;
+    /**
+     * This method does a small, initial swipe to gain some wiggle room for the normal, larger swipes.
+     * It then does a maximum of 3 swipes
+     * @param max_swipes Maximum amount of swipes that it will do before failing to find the hidden text.
+     * @return returns False if it fails to find the hidden text, True if it finds it before the max amount of swipes
+     */
+    public boolean scrollDownToHiddenText(int max_swipes){
+        int current_swipes = 0;
 
         smallInitialVerticalSwipe();
 
-        while (currentSwipes < maxSwipes) {
+        while (current_swipes < max_swipes) {
             try {
-                // Check if the text is visible on the current screen
                 if (isTheElementVisible(this.hidden_txt,1/2)) {
                     return true;
                 }
@@ -96,12 +109,10 @@ public class SwipeScreen extends BaseScreen{
             }
 
             // If it's not visible, scroll down
-            currentSwipes++;
+            current_swipes++;
         }
 
         // If we hit our max swipes and never returned true, the text isn't there
         return false;
     }
-
-
 }

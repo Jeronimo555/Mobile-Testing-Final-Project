@@ -3,7 +3,6 @@ package com.globant.mobile.screens;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import lombok.Data;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Pause;
 import org.openqa.selenium.interactions.PointerInput;
@@ -19,17 +18,24 @@ import java.util.Collections;
 public class BaseScreen {
 
     private AppiumDriver driver;
-    private int screenWidth;
-    private int screenHeight;
+    private int screen_width;
+    private int screen_height;
 
     public BaseScreen(AppiumDriver appium_driver){
         this.driver = appium_driver;
         PageFactory.initElements(new AppiumFieldDecorator(appium_driver),this);
 
-        this.screenWidth = appium_driver.manage().window().getSize().getWidth();
-        this.screenHeight = appium_driver.manage().window().getSize().getHeight();
+        setScreenDimension(appium_driver);
     }
 
+    /**
+     * Sets the screen's dimension using Appium's own methods.
+     * @param appium_driver Standard Appium driver
+     */
+    public void setScreenDimension(AppiumDriver appium_driver){
+        this.screen_width = appium_driver.manage().window().getSize().getWidth();
+        this.screen_height = appium_driver.manage().window().getSize().getHeight();
+    }
 
     /**
      * clicks element and adds description
@@ -45,7 +51,7 @@ public class BaseScreen {
     }
 
     /**
-     *
+     * Sends a specified string to a web element.
      * @param element Web element which will receive the input
      * @param value the value that you want to input
      */
@@ -57,6 +63,12 @@ public class BaseScreen {
         }
     }
 
+    /**
+     * Checks if a given web element is visible.
+     * @param element Web Element to check.
+     * @param seconds The amount of time the method waits before concluding that it is not visible.
+     * @return True if the element is visible, False if not.
+     */
     public boolean isTheElementVisible(WebElement element, int seconds) {
         WebDriverWait wait = new WebDriverWait(this.driver, Duration.ofSeconds(seconds));
 
@@ -68,75 +80,67 @@ public class BaseScreen {
         }
     }
 
-    public boolean isElementHidden(WebElement element) {
-        try {
-            return !isTheElementVisible(element,1);
-        } catch (Exception e) {
-            return true;
-        }
-    }
-
-
-    public void horizontalSwipe(WebElement element){
-            // 1. Get the dimensions of the entire device screen
-            Dimension screenSize = this.driver.manage().window().getSize();
-
-            // 2. Calculate X coordinates based on screen percentages
-            int startX = (int) (this.screenWidth * 0.92); // Start at 80% (Near right edge)
-            int endX = (int) (this.screenWidth * 0.01);   // End at 20% (Near left edge)
-
-            // 3. Set the Y coordinate to the middle of the screen
-            int y = this.screenHeight / 2;
+    /**
+     * Basic horizontal swipe. It starts at 92% of the screen's width and ends at 1%.
+     * Vertically, it always does the swipe at half the screen's height.
+     * Finger moves to specified position -> finger moves down -> finger drags to the left -> short pause -> finger lets go.
+     */
+    public void horizontalSwipe(){
+            int startX = (int) (this.screen_width * 0.92); // Start at 92% (Near right edge)
+            int endX = (int) (this.screen_width * 0.01);   // End at 20% (Near left edge)
+            int y = this.screen_height / 2;
 
             PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
-            Sequence swipe = new Sequence(finger, 1);
 
-            // Move to the starting position and press down
-            swipe.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), startX, y));
-            swipe.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
-
-            // Execute the fast flick (200ms) to trigger carousel momentum
-            swipe.addAction(finger.createPointerMove(Duration.ofMillis(1000), PointerInput.Origin.viewport(), endX, y));
-            swipe.addAction(new Pause(finger, Duration.ofMillis(200)));
-            swipe.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+            Sequence swipe = new Sequence(finger, 1)
+                    .addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), startX, y))
+                    .addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
+                    .addAction(finger.createPointerMove(Duration.ofMillis(1000), PointerInput.Origin.viewport(), endX, y))
+                    .addAction(new Pause(finger, Duration.ofMillis(200)))
+                    .addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
 
             this.driver.perform(Collections.singletonList(swipe));
     }
 
-    public void executeSwipe(int startX, int startY, int endX, int endY, Duration duration) {
+    /**
+     * General vertical swipe method, can be called whenever you need to do a vertical swipe.
+     * @param start_x Starting X position
+     * @param start_y Starting Y position
+     * @param end_x Final X position
+     * @param end_y Final Y position
+     * @param duration Duration of the swipe.
+     */
+    public void executeVerticalSwipe(int start_x, int start_y, int end_x, int end_y, Duration duration) {
         PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
-        Sequence swipe = new Sequence(finger, 1);
 
-        swipe.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), startX, startY));
-        swipe.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
-
-        swipe.addAction(finger.createPointerMove(duration, PointerInput.Origin.viewport(), endX, endY));
-        swipe.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+        Sequence swipe = new Sequence(finger, 1)
+                .addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), start_x, start_y))
+                .addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
+                .addAction(finger.createPointerMove(duration, PointerInput.Origin.viewport(), end_x, end_y))
+                .addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
 
         this.driver.perform(Collections.singletonList(swipe));
     }
 
+    /**
+     * Small, initial swipe that clears the way and gives the screen more space to drag the finger around.
+     */
     public void smallInitialVerticalSwipe() {
-        Dimension screenSize = this.driver.manage().window().getSize();
-        int safeX = (int) (this.screenWidth * 0.05); // 5% safe edge
+        int safe_x = (int) (this.screen_width * 0.05); // 5% safe edge
+        int start_y = (int) (this.screen_height * 0.30);
+        int end_y = (int) (this.screen_height * 0.10);
 
-        // Start near the top (30% down the screen) and flick up to 10%
-        int startY = (int) (this.screenHeight * 0.30);
-        int endY = (int) (this.screenHeight * 0.10);
-
-        // Fast, short flick
-        executeSwipe(safeX, startY, safeX, endY, Duration.ofMillis(300));
+        executeVerticalSwipe(safe_x, start_y, safe_x, end_y, Duration.ofMillis(300));
     }
 
+    /**
+     * General swipe movement. Starts at 80% of the screen's height and ends at 20%.
+     */
     public void verticalSwipe() {
-        Dimension screenSize = this.driver.manage().window().getSize();
-        int safeX = (int) (this.screenWidth * 0.05); // 5% safe edge
+        int safe_x = (int) (this.screen_width * 0.05); // 5% safe edge
+        int start_y = (int) (this.screen_height * 0.80);
+        int end_y = (int) (this.screen_height * 0.20);
 
-        // Now that we have leeway, we can safely start at 80% and drag to 20%
-        int startY = (int) (this.screenHeight * 0.80);
-        int endY = (int) (this.screenHeight * 0.20);
-
-        // Standard smooth scroll
-        executeSwipe(safeX, startY, safeX, endY, Duration.ofMillis(500));
+        executeVerticalSwipe(safe_x, start_y, safe_x, end_y, Duration.ofMillis(500));
     }
 }

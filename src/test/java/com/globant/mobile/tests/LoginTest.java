@@ -26,7 +26,7 @@ public class LoginTest extends BaseTest{
     }
 
     /**
-     * Since the precondition includes the user creation, the Login form already has that data in the text field,
+     * The Login form stores the signup information,
      * so we only need to click on the button to log in.
      */
     @Test(groups = {"LoginTest"})

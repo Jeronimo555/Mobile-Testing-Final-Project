@@ -20,7 +20,7 @@ public class SwipeTest extends BaseTest{
         Assert.assertTrue(this.swipe_screen.swipeToLastCard(5),"Last card should be visible.");
 
         //Now to scroll down to the hidden text.
-        boolean check_screen = swipe_screen.scrollDownToHiddenText();
+        boolean check_screen = swipe_screen.scrollDownToHiddenText(3);
         Assert.assertTrue(check_screen,"This hidden text is not visible");
     }
 }
